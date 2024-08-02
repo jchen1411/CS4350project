@@ -1,0 +1,33 @@
+package PomonaTransitSystem;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+public class RecordActualTripData {
+    public static void recordActualTripData(int tripNumber, int stopNumber, String scheduledArrivalTime, String actualStartTime, String actualArrivalTime, int numberOfPassengersIn, int numberOfPassengersOut) {
+        String insertQuery = "INSERT INTO ActualTripStopInfo (TripNumber, StopNumber, ScheduledArrivalTime, ActualStartTime, ActualArrivalTime, NumberOfPassengersIn, NumberOfPassengersOut) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+        try (Connection connection = DatabaseConnectivity.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {
+
+            preparedStatement.setInt(1, tripNumber);
+            preparedStatement.setInt(2, stopNumber);
+            preparedStatement.setTime(3, java.sql.Time.valueOf(scheduledArrivalTime));
+            preparedStatement.setTime(4, java.sql.Time.valueOf(actualStartTime));
+            preparedStatement.setTime(5, java.sql.Time.valueOf(actualArrivalTime));
+            preparedStatement.setInt(6, numberOfPassengersIn);
+            preparedStatement.setInt(7, numberOfPassengersOut);
+
+            int rowsAffected = preparedStatement.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Actual trip data recorded successfully.");
+            } else {
+                System.out.println("Failed to record actual trip data.");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
